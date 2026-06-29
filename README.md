@@ -1,4 +1,6 @@
-# Codex Subagent Library
+![Codex Subagent Library thumbnail](assets/repository-thumbnail.png)
+
+# Codex Agents/Subagents Library
 
 A Codex-only library of 36 project-scoped custom subagents for software development, review, planning, design, DevOps, debugging, and Buffer content operations.
 
