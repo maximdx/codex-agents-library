@@ -1,0 +1,40 @@
+name: Validate Codex Agents
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Codex agent files
+        run: |
+          chmod +x scripts/validate-agents.sh
+          ./scripts/validate-agents.sh
+
+      - name: Check documentation
+        run: |
+          REQUIRED_DOCS="README.md CONTRIBUTING.md LICENSE TESTING.md CODE_OF_CONDUCT.md"
+          for doc in $REQUIRED_DOCS; do
+            if [ ! -f "$doc" ]; then
+              echo "Missing required file: $doc"
+              exit 1
+            fi
+          done
+          echo "All required documentation present"
+
+      - name: Check for stale legacy agent syntax
+        run: |
+          pattern="clau""de --agent|~/.clau""de|\.clau""de/agents|model: sonnet|^tools:"
+          if grep -RInE "$pattern" README.md CONTRIBUTING.md TESTING.md docs scripts/README.md templates .codex/agents; then
+            echo "Found stale legacy agent syntax after Codex conversion"
+            exit 1
+          fi
+          echo "No stale legacy agent syntax found"
