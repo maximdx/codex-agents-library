@@ -115,6 +115,7 @@ The validator checks that all 36 TOML files parse, use required Codex fields, ma
 ## Documentation
 
 - [Getting Started](docs/getting-started.md)
+- [Create Custom Codex Subagents](docs/create-custom-codex-subagents.md)
 - [Agent Guide](docs/agent-guide.md)
 - [Examples](docs/examples.md)
 - [Orchestration Patterns](docs/orchestration-patterns.md)
