@@ -17,6 +17,7 @@ except ModuleNotFoundError:
     sys.exit(1)
 
 agents_dir = Path(".codex/agents")
+source_agents_dir = Path("agent-src/agents")
 expected_agents = 36
 required = {"name", "description", "developer_instructions"}
 forbidden_keys = {"tools", "agents", "handoffs"}
@@ -43,10 +44,54 @@ if not agents_dir.is_dir():
     print("Error: .codex/agents directory not found")
     sys.exit(1)
 
+if not source_agents_dir.is_dir():
+    print("Error: agent-src/agents directory not found")
+    sys.exit(1)
+
 agent_files = sorted(agents_dir.glob("*.toml"))
+source_agent_files = sorted(source_agents_dir.glob("*.toml"))
 print(f"Found {len(agent_files)} Codex agent files")
+print(f"Found {len(source_agent_files)} source agent presets")
 if len(agent_files) != expected_agents:
     errors.append(f"Expected {expected_agents} agents, found {len(agent_files)}")
+if len(source_agent_files) != expected_agents:
+    errors.append(
+        f"Expected {expected_agents} source agent presets, found {len(source_agent_files)}"
+    )
+
+output_names = {path.stem for path in agent_files}
+source_names = {path.stem for path in source_agent_files}
+missing_sources = sorted(output_names - source_names)
+missing_outputs = sorted(source_names - output_names)
+if missing_sources:
+    errors.append(
+        "Generated agents missing source preset(s): " + ", ".join(missing_sources)
+    )
+if missing_outputs:
+    errors.append(
+        "Source presets missing generated agent(s): " + ", ".join(missing_outputs)
+    )
+
+for path in source_agent_files:
+    try:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        errors.append(f"{path}: invalid TOML: {exc}")
+        continue
+
+    name = data.get("name")
+    if not isinstance(name, str) or not name_re.fullmatch(name):
+        errors.append(f"{path}: name must be lowercase underscore_case")
+    elif path.stem != name:
+        errors.append(f"{path}: filename stem must match name '{name}'")
+
+    layers = data.get("instruction_layers")
+    if not isinstance(layers, list) or not layers:
+        errors.append(f"{path}: instruction_layers must be a non-empty list")
+    elif not all(isinstance(layer, str) and layer.strip() for layer in layers):
+        errors.append(f"{path}: instruction_layers entries must be non-empty strings")
+    elif len(layers) != len(set(layers)):
+        errors.append(f"{path}: instruction_layers must not contain duplicates")
 
 for path in agent_files:
     try:
@@ -106,6 +151,7 @@ print("")
 print("Validation Summary")
 print("==================")
 print(f"Total agents: {len(agent_files)}")
+print(f"Source presets: {len(source_agent_files)}")
 print(f"Errors: {len(errors)}")
 print(f"Warnings: {len(warnings)}")
 

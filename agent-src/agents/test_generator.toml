@@ -1,0 +1,7 @@
+name = "test_generator"
+description = "Use when you need to create unit, integration, contract, and regression tests with appropriate mocks and coverage focus."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+nickname_candidates = ["Test Generator"]
+instruction_layers = ["common/agent-contract.md", "agents/test_generator.md"]

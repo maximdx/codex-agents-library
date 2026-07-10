@@ -1,0 +1,7 @@
+name = "e2e_tester"
+description = "Use when you need to create end-to-end tests with Playwright, Cypress, Selenium, page objects, and CI integration."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+nickname_candidates = ["E2E Tester"]
+instruction_layers = ["common/agent-contract.md", "agents/e2e_tester.md"]

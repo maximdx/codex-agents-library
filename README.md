@@ -4,7 +4,7 @@
 
 A Codex-only library of 36 project-scoped custom subagents for software development, review, planning, design, DevOps, debugging, and Buffer content operations.
 
-The agents live in `.codex/agents/*.toml` and follow the Codex custom agent schema: `name`, `description`, and `developer_instructions`, with role-based `model`, `model_reasoning_effort`, `sandbox_mode`, and `nickname_candidates` defaults.
+Codex loads the checked-in standalone files in `.codex/agents/*.toml`. Contributors author those files through the layered sources in `agent-src/`, which are assembled deterministically so shared instructions do not have to be maintained in every agent by hand.
 
 ## Quick Start
 
@@ -117,10 +117,35 @@ This is a starting policy, not a substitute for measurement. Escalate a task onl
 ## Validation
 
 ```bash
+python3 scripts/generate-agents.py --check
 ./scripts/validate-agents.sh
 ```
 
-The validator checks that all 36 TOML files parse, use required Codex fields, match underscore filenames, avoid legacy fields, and use supported model/sandbox settings.
+`generate-agents.py --check` verifies that the checked-in runtime TOMLs match their layered sources. The validator checks that all 36 TOML files parse, use required Codex fields, match underscore filenames, avoid legacy fields, and use supported model/sandbox settings.
+
+## Layered Agent Authoring
+
+Codex consumes one complete TOML file per custom agent; it does not compose repository fragments at runtime. This repository therefore uses `agent-src/` as its authoring surface and keeps the generated `.codex/agents/*.toml` files checked in for immediate use after cloning.
+
+Instructions are composed in this order:
+
+1. Shared contract
+2. Execution mode
+3. Base role
+4. Domain or capability overlays
+5. Agent-specific instructions
+
+The initial layering phase extracts only the universal shared contract, with the orchestrator's coordination exception preserved. It intentionally preserves all 36 public names and each agent's existing description, model, reasoning effort, sandbox, nicknames, and role-specific instructions. Broader role and language consolidation will happen separately after the generation path is established.
+
+After changing a source file, regenerate and verify the runtime files:
+
+```bash
+python3 scripts/generate-agents.py
+python3 scripts/generate-agents.py --check
+./scripts/validate-agents.sh
+```
+
+See [Contributing](CONTRIBUTING.md) for the source layout and contributor workflow.
 
 ## Documentation
 

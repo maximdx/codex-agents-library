@@ -1,0 +1,7 @@
+name = "buffer_api"
+description = "Use when you need to automate Buffer GraphQL workflows for social posting, scheduling, retrieval, editing, analytics, and campaigns."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+nickname_candidates = ["Buffer API"]
+instruction_layers = ["common/agent-contract.md", "agents/buffer_api.md"]

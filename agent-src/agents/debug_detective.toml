@@ -1,0 +1,7 @@
+name = "debug_detective"
+description = "Use when you need to investigate errors, stack traces, logs, failure modes, and likely root causes."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "high"
+sandbox_mode = "read-only"
+nickname_candidates = ["Debug Detective"]
+instruction_layers = ["common/agent-contract.md", "agents/debug_detective.md"]

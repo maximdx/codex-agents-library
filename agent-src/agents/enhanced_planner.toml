@@ -1,0 +1,7 @@
+name = "enhanced_planner"
+description = "Use when you need to create multi-step implementation plans with dependencies, milestones, risks, and success criteria."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+sandbox_mode = "read-only"
+nickname_candidates = ["Enhanced Planner"]
+instruction_layers = ["common/agent-contract.md", "agents/enhanced_planner.md"]

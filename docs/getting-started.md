@@ -25,7 +25,21 @@ Spawn docker_expert to optimize this Dockerfile and explain the tradeoffs.
 
 ## How Codex Loads These Agents
 
-Each `.toml` file defines one custom agent. Codex uses the `name` field as the source of truth; filenames match names for readability. Project-level settings in `.codex/config.toml` set `max_threads = 4` and `max_depth = 1`.
+Each checked-in `.codex/agents/*.toml` file defines one complete custom agent. Codex uses the `name` field as the source of truth; filenames match names for readability. Project-level settings in `.codex/config.toml` set `max_threads = 4` and `max_depth = 1`.
+
+The `agent-src/` directory is for contributors, not a runtime Codex feature. Each `agent-src/agents/*.toml` descriptor lists ordered fragments under `agent-src/fragments/`; the generator assembles them into the standalone TOMLs before they are committed. If you only want to use the library, no generation step is necessary.
+
+## Modifying an Agent
+
+Edit the corresponding source under `agent-src/`, then regenerate and validate:
+
+```bash
+python3 scripts/generate-agents.py
+python3 scripts/generate-agents.py --check
+./scripts/validate-agents.sh
+```
+
+Do not edit `.codex/agents/*.toml` directly: the next generation run will replace manual changes.
 
 ## Choosing an Agent
 

@@ -2,13 +2,32 @@
 
 ## Automated Validation
 
-Run:
+Regenerate agents after changing a source preset or instruction fragment:
 
 ```bash
+python3 scripts/generate-agents.py
+```
+
+Check that the committed runtime agents are up to date, then validate both the
+source presets and generated TOML:
+
+```bash
+python3 scripts/generate-agents.py --check
 ./scripts/validate-agents.sh
 ```
 
-Expected result: 36 Codex agent files, 0 errors.
+For the complete release-oriented check, run:
+
+```bash
+./scripts/pre-launch-check.sh
+```
+
+Expected result: 36 source presets, 36 generated Codex agent files, no
+generation drift, and 0 validation errors.
+
+The generation check is deterministic and does not modify files. If it fails,
+run the generator without `--check`, review the resulting `.codex/agents/`
+changes, and rerun validation.
 
 ## Manual Smoke Matrix
 
@@ -25,6 +44,9 @@ Expected result: 36 Codex agent files, 0 errors.
 ## Acceptance Criteria
 
 - Codex recognizes each requested subagent name.
+- Every `agent-src/agents/*.toml` preset has a matching generated
+  `.codex/agents/*.toml` file, and vice versa.
+- `python3 scripts/generate-agents.py --check` reports no drift.
 - Read-only agents report findings without editing files.
 - Workspace-write agents keep changes scoped to their specialty.
 - Orchestration prompts keep `max_depth = 1` and ask the parent agent to spawn specialists as needed.

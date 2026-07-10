@@ -1,0 +1,7 @@
+name = "task_breakdown"
+description = "Use when you need to break epics and large asks into stories, tasks, estimates, dependencies, and acceptance criteria."
+model = "gpt-5.6-luna"
+model_reasoning_effort = "low"
+sandbox_mode = "read-only"
+nickname_candidates = ["Task Breakdown"]
+instruction_layers = ["common/agent-contract.md", "agents/task_breakdown.md"]
