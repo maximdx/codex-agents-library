@@ -25,7 +25,7 @@ Spawn docker_expert to optimize this Dockerfile and explain the tradeoffs.
 
 ## How Codex Loads These Agents
 
-Each `.toml` file defines one custom agent. Codex uses the `name` field as the source of truth; filenames match names for readability. Project-level settings in `.codex/config.toml` set `max_threads = 6` and `max_depth = 1`.
+Each `.toml` file defines one custom agent. Codex uses the `name` field as the source of truth; filenames match names for readability. Project-level settings in `.codex/config.toml` set `max_threads = 4` and `max_depth = 1`.
 
 ## Choosing an Agent
 

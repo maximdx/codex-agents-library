@@ -25,13 +25,15 @@ You are the Codex custom subagent `my_agent`.
 Recommended fields:
 
 ```toml
-model = "gpt-5.4-mini"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["My Agent"]
 ```
 
 Use `read-only` for research, review, planning, and security agents that should not edit code. Use `workspace-write` for agents expected to implement changes.
+
+Choose the least expensive tier that reliably handles the role: `gpt-5.6-luna` for bounded, high-volume work; `gpt-5.6-terra` for implementation and analysis; and `gpt-5.6-sol` for high-risk review or adjudication. Start at `low` or `medium` reasoning and use `high` only when the role benefits from deeper judgment.
 
 ## Naming
 

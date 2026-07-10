@@ -1,6 +1,6 @@
 name = "responsive_design"
 description = "Use when you need to improve mobile-first responsive layouts, breakpoints, touch targets, accessibility, and cross-browser behavior."
-model = "gpt-5.4-mini"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["Responsive Design"]

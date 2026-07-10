@@ -21,7 +21,8 @@ expected_agents = 36
 required = {"name", "description", "developer_instructions"}
 forbidden_keys = {"tools", "agents", "handoffs"}
 valid_sandbox_modes = {"read-only", "workspace-write", "danger-full-access"}
-valid_reasoning = {"minimal", "low", "medium", "high", "extra-high"}
+valid_models = {"gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"}
+valid_reasoning = {"minimal", "low", "medium", "high", "xhigh"}
 name_re = re.compile(r"^[a-z0-9]+(_[a-z0-9]+)*$")
 nickname_re = re.compile(r"^[A-Za-z0-9 _-]+$")
 stale_patterns = [
@@ -79,12 +80,10 @@ for path in agent_files:
         errors.append(f"{path}: developer_instructions contains stale legacy agent syntax")
 
     model = data.get("model")
-    if model == "sonnet":
-        errors.append(f"{path}: model must be a Codex/OpenAI model, not sonnet")
-    elif model is None:
+    if model is None:
         warnings.append(f"{path}: model omitted; agent will inherit parent setting")
-    elif not isinstance(model, str) or not model.startswith("gpt-"):
-        errors.append(f"{path}: model should be an explicit gpt-* model")
+    elif model not in valid_models:
+        errors.append(f"{path}: model must be one of {', '.join(sorted(valid_models))}")
 
     reasoning = data.get("model_reasoning_effort")
     if reasoning is not None and reasoning not in valid_reasoning:

@@ -1,6 +1,6 @@
 name = "lowercase_underscore_agent_name"
 description = "Use when you need a clear specialty and trigger for Codex subagent spawning."
-model = "gpt-5.4-mini"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["Display Name"]

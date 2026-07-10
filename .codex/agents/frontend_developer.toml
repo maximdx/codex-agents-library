@@ -1,6 +1,6 @@
 name = "frontend_developer"
 description = "Use when you need to build modern web interfaces with React, Vue, Angular, TypeScript, state management, and accessibility."
-model = "gpt-5.4-mini"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["Frontend Developer"]
