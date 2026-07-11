@@ -4,4 +4,4 @@ model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["JavaScript Expert"]
-instruction_layers = ["common/agent-contract.md", "agents/javascript_expert.md"]
+instruction_layers = ["common/agent-contract.md", "bases/software-engineer.md", "overlays/languages/javascript-typescript.md"]

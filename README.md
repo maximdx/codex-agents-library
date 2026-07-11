@@ -135,7 +135,7 @@ Instructions are composed in this order:
 4. Domain or capability overlays
 5. Agent-specific instructions
 
-The initial layering phase extracts only the universal shared contract, with the orchestrator's coordination exception preserved. It intentionally preserves all 36 public names and each agent's existing description, model, reasoning effort, sandbox, nicknames, and role-specific instructions. Broader role and language consolidation will happen separately after the generation path is established.
+All presets use the universal shared contract, with the orchestrator's coordination exception preserved. The first semantic family—Python, JavaScript/TypeScript, Go, Java, Rust, and SQL—also shares a compact Software Engineer base and uses focused language/tool overlays. Other families retain their agent-specific fragments until they are consolidated independently. All 36 public names and each agent's description, model, reasoning effort, sandbox, and nicknames remain stable.
 
 After changing a source file, regenerate and verify the runtime files:
 

@@ -13,8 +13,12 @@ Create or edit the agent definition under `agent-src/agents/`. Do not hand-edit 
 
 ```text
 agent-src/
-├── fragments/common/agent-contract.md
-└── agents/<agent_name>.toml
+├── agents/<agent_name>.toml
+└── fragments/
+    ├── common/agent-contract.md
+    ├── bases/<shared_role>.md
+    ├── overlays/<domain>/<specialty>.md
+    └── agents/<agent_name>.md
         ↓ scripts/generate-agents.py
 .codex/agents/<agent_name>.toml
 ```
@@ -27,7 +31,7 @@ Each source definition supplies the agent metadata and its ordered `instruction_
 4. Domain or capability overlays
 5. Agent-specific instructions
 
-Not every category needs a distinct fragment yet. In the current migration phase, descriptors list two layers: `common/agent-contract.md` and `agents/<agent_name>.md`. Only the universal contract has been extracted; existing role-specific instructions remain intact. The orchestrator retains its narrow coordination exception. Do not consolidate or rewrite agent semantics as part of an unrelated contribution.
+Not every category needs a distinct fragment. Most presets still use `common/agent-contract.md` plus `agents/<agent_name>.md`. The six language/tool presets instead compose `common/agent-contract.md`, `bases/software-engineer.md`, and one file under `overlays/languages/`. Add a layer only when it owns guidance reused by multiple presets; layers must be additive and non-contradictory rather than relying on later text to override earlier instructions. The orchestrator retains its narrow coordination exception. Do not consolidate or rewrite agent semantics as part of an unrelated contribution.
 
 Start from `templates/agent-template.md` for the descriptor and `templates/agent-instructions-template.md` for the agent-specific fragment. The descriptor filename must match the `name` field.
 

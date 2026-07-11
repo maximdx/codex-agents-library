@@ -2,7 +2,7 @@
 
 This guide lists all 36 Codex custom subagents and their intended use.
 
-The file links below point to the checked-in standalone TOMLs that Codex loads. Contributors should make changes through `agent-src/` and run `python3 scripts/generate-agents.py`; direct edits to `.codex/agents/` are overwritten. The current layering phase preserves every public agent name and its existing behavior while extracting only the universal shared contract.
+The file links below point to the checked-in standalone TOMLs that Codex loads. Contributors should make changes through `agent-src/` and run `python3 scripts/generate-agents.py`; direct edits to `.codex/agents/` are overwritten. Every preset uses the shared agent contract. The Python, JavaScript/TypeScript, Go, Java, Rust, and SQL presets additionally compose a Software Engineer base with a focused overlay while preserving their public names and routing metadata.
 
 ## Orchestration
 

@@ -18,6 +18,7 @@ except ModuleNotFoundError:
 
 agents_dir = Path(".codex/agents")
 source_agents_dir = Path("agent-src/agents")
+fragments_dir = Path("agent-src/fragments")
 expected_agents = 36
 required = {"name", "description", "developer_instructions"}
 forbidden_keys = {"tools", "agents", "handoffs"}
@@ -33,6 +34,22 @@ stale_patterns = [
     "model: sonnet",
     "\ntools:",
 ]
+language_overlays = {
+    "python_expert": "overlays/languages/python.md",
+    "javascript_expert": "overlays/languages/javascript-typescript.md",
+    "go_expert": "overlays/languages/go.md",
+    "java_expert": "overlays/languages/java.md",
+    "rust_expert": "overlays/languages/rust.md",
+    "sql_expert": "overlays/languages/sql.md",
+}
+language_markers = {
+    "python_expert": [("type annotation", "type hint", "typing"), ("pytest", "unittest"), ("asyncio", "async/await")],
+    "javascript_expert": [("typescript",), ("jest", "vitest"), ("async", "promise")],
+    "go_expert": [("context.context",), ("table-driven",), ("goroutine", "channel")],
+    "java_expert": [("java version", "modern features"), ("spring",), ("junit",)],
+    "rust_expert": [("ownership", "borrowing"), ("result", "option"), ("cargo",)],
+    "sql_expert": [("parameterized", "sql injection"), ("execution plan", "explain"), ("index", "constraint")],
+}
 
 errors: list[str] = []
 warnings: list[str] = []
@@ -72,6 +89,7 @@ if missing_outputs:
         "Source presets missing generated agent(s): " + ", ".join(missing_outputs)
     )
 
+referenced_layers: set[str] = set()
 for path in source_agent_files:
     try:
         data = tomllib.loads(path.read_text(encoding="utf-8"))
@@ -92,6 +110,27 @@ for path in source_agent_files:
         errors.append(f"{path}: instruction_layers entries must be non-empty strings")
     elif len(layers) != len(set(layers)):
         errors.append(f"{path}: instruction_layers must not contain duplicates")
+    else:
+        referenced_layers.update(layers)
+
+    if name in language_overlays:
+        expected_layers = [
+            "common/agent-contract.md",
+            "bases/software-engineer.md",
+            language_overlays[name],
+        ]
+        if layers != expected_layers:
+            errors.append(
+                f"{path}: language agent layers must be {expected_layers!r}"
+            )
+
+available_layers = {
+    path.relative_to(fragments_dir).as_posix()
+    for path in fragments_dir.rglob("*.md")
+} if fragments_dir.is_dir() else set()
+unused_layers = sorted(available_layers - referenced_layers)
+if unused_layers:
+    errors.append("Unused instruction layer(s): " + ", ".join(unused_layers))
 
 for path in agent_files:
     try:
@@ -123,6 +162,13 @@ for path in agent_files:
         errors.append(f"{path}: developer_instructions is missing or too short")
     elif any(pattern in instructions for pattern in stale_patterns):
         errors.append(f"{path}: developer_instructions contains stale legacy agent syntax")
+    elif name in language_markers:
+        normalized = instructions.lower()
+        for alternatives in language_markers[name]:
+            if not any(marker in normalized for marker in alternatives):
+                errors.append(
+                    f"{path}: missing language behavior marker from {alternatives!r}"
+                )
 
     model = data.get("model")
     if model is None:
