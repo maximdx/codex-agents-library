@@ -1,0 +1,7 @@
+name = "api_designer"
+description = "Use when you need to design REST, GraphQL, OpenAPI contracts, versioning strategy, and API documentation."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "high"
+sandbox_mode = "workspace-write"
+nickname_candidates = ["API Designer"]
+instruction_layers = ["common/agent-contract.md", "agents/api_designer.md"]

@@ -14,6 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check generated Codex agent files
+        run: python3 scripts/generate-agents.py --check
+
       - name: Validate Codex agent files
         run: |
           chmod +x scripts/validate-agents.sh
@@ -33,7 +36,7 @@ jobs:
       - name: Check for stale legacy agent syntax
         run: |
           pattern="clau""de --agent|~/.clau""de|\.clau""de/agents|model: sonnet|^tools:"
-          if grep -RInE "$pattern" README.md CONTRIBUTING.md TESTING.md docs scripts/README.md templates .codex/agents; then
+          if grep -RInE "$pattern" README.md CONTRIBUTING.md TESTING.md docs scripts/README.md templates agent-src .codex/agents; then
             echo "Found stale legacy agent syntax after Codex conversion"
             exit 1
           fi

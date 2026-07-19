@@ -17,11 +17,14 @@ except ModuleNotFoundError:
     sys.exit(1)
 
 agents_dir = Path(".codex/agents")
+source_agents_dir = Path("agent-src/agents")
+fragments_dir = Path("agent-src/fragments")
 expected_agents = 36
 required = {"name", "description", "developer_instructions"}
 forbidden_keys = {"tools", "agents", "handoffs"}
 valid_sandbox_modes = {"read-only", "workspace-write", "danger-full-access"}
-valid_reasoning = {"minimal", "low", "medium", "high", "extra-high"}
+valid_models = {"gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"}
+valid_reasoning = {"minimal", "low", "medium", "high", "xhigh"}
 name_re = re.compile(r"^[a-z0-9]+(_[a-z0-9]+)*$")
 nickname_re = re.compile(r"^[A-Za-z0-9 _-]+$")
 stale_patterns = [
@@ -31,6 +34,22 @@ stale_patterns = [
     "model: sonnet",
     "\ntools:",
 ]
+language_overlays = {
+    "python_expert": "overlays/languages/python.md",
+    "javascript_expert": "overlays/languages/javascript-typescript.md",
+    "go_expert": "overlays/languages/go.md",
+    "java_expert": "overlays/languages/java.md",
+    "rust_expert": "overlays/languages/rust.md",
+    "sql_expert": "overlays/languages/sql.md",
+}
+language_markers = {
+    "python_expert": [("type annotation", "type hint", "typing"), ("pytest", "unittest"), ("asyncio", "async/await")],
+    "javascript_expert": [("typescript",), ("jest", "vitest"), ("async", "promise")],
+    "go_expert": [("context.context",), ("table-driven",), ("goroutine", "channel")],
+    "java_expert": [("java version", "modern features"), ("spring",), ("junit",)],
+    "rust_expert": [("ownership", "borrowing"), ("result", "option"), ("cargo",)],
+    "sql_expert": [("parameterized", "sql injection"), ("execution plan", "explain"), ("index", "constraint")],
+}
 
 errors: list[str] = []
 warnings: list[str] = []
@@ -42,10 +61,76 @@ if not agents_dir.is_dir():
     print("Error: .codex/agents directory not found")
     sys.exit(1)
 
+if not source_agents_dir.is_dir():
+    print("Error: agent-src/agents directory not found")
+    sys.exit(1)
+
 agent_files = sorted(agents_dir.glob("*.toml"))
+source_agent_files = sorted(source_agents_dir.glob("*.toml"))
 print(f"Found {len(agent_files)} Codex agent files")
+print(f"Found {len(source_agent_files)} source agent presets")
 if len(agent_files) != expected_agents:
     errors.append(f"Expected {expected_agents} agents, found {len(agent_files)}")
+if len(source_agent_files) != expected_agents:
+    errors.append(
+        f"Expected {expected_agents} source agent presets, found {len(source_agent_files)}"
+    )
+
+output_names = {path.stem for path in agent_files}
+source_names = {path.stem for path in source_agent_files}
+missing_sources = sorted(output_names - source_names)
+missing_outputs = sorted(source_names - output_names)
+if missing_sources:
+    errors.append(
+        "Generated agents missing source preset(s): " + ", ".join(missing_sources)
+    )
+if missing_outputs:
+    errors.append(
+        "Source presets missing generated agent(s): " + ", ".join(missing_outputs)
+    )
+
+referenced_layers: set[str] = set()
+for path in source_agent_files:
+    try:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        errors.append(f"{path}: invalid TOML: {exc}")
+        continue
+
+    name = data.get("name")
+    if not isinstance(name, str) or not name_re.fullmatch(name):
+        errors.append(f"{path}: name must be lowercase underscore_case")
+    elif path.stem != name:
+        errors.append(f"{path}: filename stem must match name '{name}'")
+
+    layers = data.get("instruction_layers")
+    if not isinstance(layers, list) or not layers:
+        errors.append(f"{path}: instruction_layers must be a non-empty list")
+    elif not all(isinstance(layer, str) and layer.strip() for layer in layers):
+        errors.append(f"{path}: instruction_layers entries must be non-empty strings")
+    elif len(layers) != len(set(layers)):
+        errors.append(f"{path}: instruction_layers must not contain duplicates")
+    else:
+        referenced_layers.update(layers)
+
+    if name in language_overlays:
+        expected_layers = [
+            "common/agent-contract.md",
+            "bases/software-engineer.md",
+            language_overlays[name],
+        ]
+        if layers != expected_layers:
+            errors.append(
+                f"{path}: language agent layers must be {expected_layers!r}"
+            )
+
+available_layers = {
+    path.relative_to(fragments_dir).as_posix()
+    for path in fragments_dir.rglob("*.md")
+} if fragments_dir.is_dir() else set()
+unused_layers = sorted(available_layers - referenced_layers)
+if unused_layers:
+    errors.append("Unused instruction layer(s): " + ", ".join(unused_layers))
 
 for path in agent_files:
     try:
@@ -77,14 +162,19 @@ for path in agent_files:
         errors.append(f"{path}: developer_instructions is missing or too short")
     elif any(pattern in instructions for pattern in stale_patterns):
         errors.append(f"{path}: developer_instructions contains stale legacy agent syntax")
+    elif name in language_markers:
+        normalized = instructions.lower()
+        for alternatives in language_markers[name]:
+            if not any(marker in normalized for marker in alternatives):
+                errors.append(
+                    f"{path}: missing language behavior marker from {alternatives!r}"
+                )
 
     model = data.get("model")
-    if model == "sonnet":
-        errors.append(f"{path}: model must be a Codex/OpenAI model, not sonnet")
-    elif model is None:
+    if model is None:
         warnings.append(f"{path}: model omitted; agent will inherit parent setting")
-    elif not isinstance(model, str) or not model.startswith("gpt-"):
-        errors.append(f"{path}: model should be an explicit gpt-* model")
+    elif model not in valid_models:
+        errors.append(f"{path}: model must be one of {', '.join(sorted(valid_models))}")
 
     reasoning = data.get("model_reasoning_effort")
     if reasoning is not None and reasoning not in valid_reasoning:
@@ -107,6 +197,7 @@ print("")
 print("Validation Summary")
 print("==================")
 print(f"Total agents: {len(agent_files)}")
+print(f"Source presets: {len(source_agent_files)}")
 print(f"Errors: {len(errors)}")
 print(f"Warnings: {len(warnings)}")
 

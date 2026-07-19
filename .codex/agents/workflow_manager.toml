@@ -1,7 +1,7 @@
 name = "workflow_manager"
 description = "Use when you need to design sequential and parallel execution workflows with dependencies, retries, and handoffs."
-model = "gpt-5.4"
-model_reasoning_effort = "high"
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["Workflow Manager"]
 developer_instructions = """

@@ -1,0 +1,7 @@
+name = "go_expert"
+description = "Use when you need to implement idiomatic Go services with concurrency, interfaces, error handling, and testing."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+nickname_candidates = ["Go Expert"]
+instruction_layers = ["common/agent-contract.md", "bases/software-engineer.md", "overlays/languages/go.md"]

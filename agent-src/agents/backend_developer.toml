@@ -1,0 +1,7 @@
+name = "backend_developer"
+description = "Use when you need to build APIs, authentication, authorization, validation, database access, and server-side business logic."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+nickname_candidates = ["Backend Developer"]
+instruction_layers = ["common/agent-contract.md", "agents/backend_developer.md"]

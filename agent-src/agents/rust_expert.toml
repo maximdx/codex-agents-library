@@ -1,0 +1,7 @@
+name = "rust_expert"
+description = "Use when you need to implement Rust with ownership, borrowing, async, error handling, and performance-aware design."
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+sandbox_mode = "workspace-write"
+nickname_candidates = ["Rust Expert"]
+instruction_layers = ["common/agent-contract.md", "bases/software-engineer.md", "overlays/languages/rust.md"]

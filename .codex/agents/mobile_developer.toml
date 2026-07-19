@@ -1,6 +1,6 @@
 name = "mobile_developer"
 description = "Use when you need to build cross-platform and native mobile features with React Native, Flutter, iOS, and Android patterns."
-model = "gpt-5.4-mini"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["Mobile Developer"]

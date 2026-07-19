@@ -1,7 +1,7 @@
 name = "ab_test_ideas"
 description = "Use when you need to generate experiment hypotheses, variants, metrics, guardrails, and product test plans."
-model = "gpt-5.4-mini"
-model_reasoning_effort = "medium"
+model = "gpt-5.6-luna"
+model_reasoning_effort = "low"
 sandbox_mode = "read-only"
 nickname_candidates = ["AB Test Ideas"]
 developer_instructions = """

@@ -1,6 +1,6 @@
 name = "docker_expert"
 description = "Use when you need to create and review Dockerfiles, compose files, image optimization, build caching, and container security."
-model = "gpt-5.4-mini"
+model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 nickname_candidates = ["Docker Expert"]
